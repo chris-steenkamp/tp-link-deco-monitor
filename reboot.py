@@ -34,11 +34,15 @@ def create_driver(headless):
         driver.quit()
 
 
+def navigate_to_page(driver, url, wait):
+    print(f"Navigating to {url}")
+    driver.get(url)
+    sleep(wait)
+
+
 def perform_reboot(url, password, headless: bool = True):
     with create_driver(headless) as driver:
-        print("Navigating to login page...")
-        driver.get(url)
-        sleep(3)
+        navigate_to_page(driver, url, 3)
 
         # Set password
         password_field = driver.find_element(By.CLASS_NAME, "password-hidden")
@@ -52,9 +56,7 @@ def perform_reboot(url, password, headless: bool = True):
         print("Logged in")
 
         # Navigate to reboot page
-        print("Loading device list...")
-        driver.get(f"{url}#reboot")
-        sleep(30)
+        navigate_to_page(driver, f"{url}#reboot", 30)
 
         # Click reboot
         print("Rebooting...")
