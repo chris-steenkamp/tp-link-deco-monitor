@@ -1,4 +1,5 @@
 import os
+from contextlib import contextmanager
 from time import sleep
 
 from dotenv import load_dotenv
@@ -6,6 +7,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 
 # def sleep(n): ...
+
 
 def get_named_element(driver, class_name, element_name):
     element = [
@@ -16,50 +18,58 @@ def get_named_element(driver, class_name, element_name):
 
     return element
 
-def perform_reboot(url, password, headless: bool = True):
+
+@contextmanager
+def create_driver(headless):
     print("Starting browser...")
     options = webdriver.FirefoxOptions()
     if headless:
         options.add_argument("--headless")
     driver = webdriver.Firefox(options=options)
     print("Browser started")
-    sleep(5)
 
-    print("Navigating to login page...")
-    driver.get(url)
-    sleep(3)
+    try:
+        yield driver
+    finally:
+        driver.quit()
 
-    # Set password
-    password_field = driver.find_element(By.CLASS_NAME, "password-hidden")
-    sleep(1)
-    password_field.send_keys(password)
-    sleep(1)
 
-    # Login
-    print("Logging in...")
-    login = driver.find_element(By.CLASS_NAME, "button-button")
-    sleep(1)
-    login.click()
-    sleep(5)
-    print("Logged in")
+def perform_reboot(url, password, headless: bool = True):
+    with create_driver(headless) as driver:
+        print("Navigating to login page...")
+        driver.get(url)
+        sleep(3)
 
-    # Navigate to reboot page
-    print("Loading device list...")
-    driver.get(f"{url}#reboot")
-    sleep(30)
+        # Set password
+        password_field = driver.find_element(By.CLASS_NAME, "password-hidden")
+        sleep(1)
+        password_field.send_keys(password)
+        sleep(1)
 
-    # Click reboot
-    print("Rebooting...")
-    reboot_button = get_named_element(driver, "button-button", "REBOOT ALL")
-    reboot_button.click()
-    sleep(5)
+        # Login
+        print("Logging in...")
+        login = get_named_element(driver, "button-button", "LOG IN")
+        sleep(1)
+        login.click()
+        sleep(5)
+        print("Logged in")
 
-    # Confirm reboot
-    reboot_button = get_named_element(driver, "button-button", "Reboot")
-    reboot_button.click()
-    sleep(60)
+        # Navigate to reboot page
+        print("Loading device list...")
+        driver.get(f"{url}#reboot")
+        sleep(30)
 
-    driver.quit()
+        # Click reboot
+        print("Rebooting...")
+        reboot_button = get_named_element(driver, "button-button", "REBOOT ALL")
+        reboot_button.click()
+        sleep(5)
+
+        # Confirm reboot
+        reboot_button = get_named_element(driver, "button-button", "Reboot")
+        reboot_button.click()
+        sleep(60)
+
 
 if __name__ == "__main__":
     load_dotenv()
