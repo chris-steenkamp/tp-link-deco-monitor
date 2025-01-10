@@ -42,14 +42,11 @@ def perform_reboot(url, password, headless: bool = True):
 
         # Set password
         password_field = driver.find_element(By.CLASS_NAME, "password-hidden")
-        sleep(1)
         password_field.send_keys(password)
-        sleep(1)
 
         # Login
         print("Logging in...")
         login = get_named_element(driver, "button-button", "LOG IN")
-        sleep(1)
         login.click()
         sleep(5)
         print("Logged in")
