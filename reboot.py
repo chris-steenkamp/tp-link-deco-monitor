@@ -71,8 +71,8 @@ def perform_reboot(headless: bool = True):
 
         # Confirm reboot
         reboot_button = get_named_element(driver, "button-button", "Reboot")
-        # reboot_button.click()
-        sleep(60)
+        reboot_button.click()
+        sleep(300)
         print("Success!")
 
 
