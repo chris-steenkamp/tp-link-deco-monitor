@@ -21,12 +21,12 @@ def get_named_element(driver, class_name, element_name):
 
 @contextmanager
 def create_driver(headless):
-    print("Starting browser...")
+    print("Starting browser... ", end="")
     options = webdriver.FirefoxOptions()
     if headless:
         options.add_argument("--headless")
     driver = webdriver.Firefox(options=options)
-    print("Browser started")
+    print("Success!")
 
     try:
         yield driver
@@ -40,7 +40,12 @@ def navigate_to_page(driver, url, wait):
     sleep(wait)
 
 
-def perform_reboot(url, password, headless: bool = True):
+def perform_reboot(headless: bool = True):
+    load_dotenv()
+
+    password = os.environ.get("PASSWORD")
+    url = os.environ.get("BASE_URL")
+
     with create_driver(headless) as driver:
         navigate_to_page(driver, url, 3)
 
@@ -49,31 +54,27 @@ def perform_reboot(url, password, headless: bool = True):
         password_field.send_keys(password)
 
         # Login
-        print("Logging in...")
+        print("Logging in... ", end="")
         login = get_named_element(driver, "button-button", "LOG IN")
         login.click()
         sleep(5)
-        print("Logged in")
+        print("Success!")
 
         # Navigate to reboot page
         navigate_to_page(driver, f"{url}#reboot", 30)
 
         # Click reboot
-        print("Rebooting...")
+        print("Rebooting... ", end="")
         reboot_button = get_named_element(driver, "button-button", "REBOOT ALL")
         reboot_button.click()
         sleep(5)
 
         # Confirm reboot
         reboot_button = get_named_element(driver, "button-button", "Reboot")
-        reboot_button.click()
+        # reboot_button.click()
         sleep(60)
+        print("Success!")
 
 
 if __name__ == "__main__":
-    load_dotenv()
-
-    password = os.environ.get("PASSWORD")
-    url = os.environ.get("BASE_URL")
-
-    perform_reboot(url, password)
+    perform_reboot()
