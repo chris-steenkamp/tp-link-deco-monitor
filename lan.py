@@ -6,17 +6,10 @@ from dotenv import load_dotenv
 
 
 def _change_interface_state(ifname, state):
-    print(f"Changing state of {ifname} to {state}... ", end="")
-    # os.system(f"ifconfig {ifname} {state}")
-    result = subprocess.run(
+    run_subprocess(
+        f"Changing state of {ifname} to {state}... ",
         ["ip", "link", "set", ifname, state],
-        capture_output=True,
-        text=True,
     )
-
-    sleep(5)
-    result.check_returncode()
-    print("Success!")
 
 
 def _kill_existing_dhcpcd():
@@ -39,27 +32,25 @@ def _kill_existing_dhcpcd():
 
 
 def _refresh_dhcp(ifname):
-    print(f"Requesting new IP for {ifname}... ", end="")
-    result = subprocess.run(
-        ["dhcpcd", "-n", "enp3s0", "-m", "100", "-t", "180"],
-        capture_output=True,
-        text=True,
+    run_subprocess(
+        f"Requesting new IP for {ifname}... ",
+        ["dhcpcd", "-n", ifname, "-m", "100", "-t", "180"],
     )
-
-    sleep(5)
-    result.check_returncode()
-    print("Success!")
 
 
 def _reload_netplan():
-    print("Reloading route tables... ", end="")
+    run_subprocess("Reloading route tables... ", ["netplan", "apply"])
+
+
+def run_subprocess(header, args, wait=5):
+    print(header, end="")
     result = subprocess.run(
-        ["netplan", "apply"],
+        args,
         capture_output=True,
         text=True,
     )
 
-    sleep(5)
+    sleep(wait)
     result.check_returncode()
     print("Success!")
 
@@ -76,6 +67,3 @@ def bring_up_interface():
     _kill_existing_dhcpcd()
     _refresh_dhcp(ifname)
     _reload_netplan()
-
-
-test = 1
