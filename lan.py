@@ -55,15 +55,26 @@ def run_subprocess(header, args, wait=5):
     print("Success!")
 
 
+def _remove_default_route(ifname):
+    run_subprocess(
+        f"Removing default route from {ifname}... ",
+        ["ip", "route", "del", "default", "via", "192.168.0.1", "dev", ifname],
+    )
+    run_subprocess(
+        f"Removing route additional route from {ifname}... ",
+        ["ip", "route", "del", "192.168.0.1", "dev", ifname],
+    )
+
+
+def _add_default_route(ifname): ...
+
+
 def teardown_interface():
     load_dotenv()
-    _change_interface_state(os.environ.get("IFNAME"), "down")
+    _remove_default_route(os.environ.get("IFNAME"))
 
 
 def bring_up_interface():
     load_dotenv()
-    ifname = os.environ.get("IFNAME")
-    _change_interface_state(ifname, "up")
-    _kill_existing_dhcpcd()
-    _refresh_dhcp(ifname)
+    _add_default_route(ifname=os.environ.get("IFNAME"))
     _reload_netplan()
