@@ -28,9 +28,9 @@ def _switch_network(network_id) -> bool:
         .split("\n")[1]
     )
     if success := ("OK" == result):
-        print("Success!")
+        print("Success!", flush=True)
     else:
-        print("Failed!")
+        print("Failed!", flush=True)
 
     sleep(5)
 

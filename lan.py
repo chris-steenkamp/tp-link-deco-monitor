@@ -52,7 +52,7 @@ def run_subprocess(header, args, wait=5):
 
     sleep(wait)
     result.check_returncode()
-    print("Success!")
+    print("Success!", flush=True)
 
 
 def _remove_default_route(ifname):

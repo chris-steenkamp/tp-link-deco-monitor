@@ -26,7 +26,7 @@ def create_driver(headless):
     if headless:
         options.add_argument("--headless")
     driver = webdriver.Firefox(options=options)
-    print("Success!")
+    print("Success!", flush=True)
 
     try:
         yield driver
@@ -35,7 +35,7 @@ def create_driver(headless):
 
 
 def navigate_to_page(driver, url, wait):
-    print(f"Navigating to {url}")
+    print(f"Navigating to {url}", flush=True)
     driver.get(url)
     sleep(wait)
 
@@ -58,7 +58,7 @@ def perform_reboot(headless: bool = True):
         login = get_named_element(driver, "button-button", "LOG IN")
         login.click()
         sleep(5)
-        print("Success!")
+        print("Success!", flush=True)
 
         # Navigate to reboot page
         navigate_to_page(driver, f"{url}#reboot", 30)
@@ -73,7 +73,7 @@ def perform_reboot(headless: bool = True):
         reboot_button = get_named_element(driver, "button-button", "Reboot")
         reboot_button.click()
         sleep(300)
-        print("Success!")
+        print("Success!", flush=True)
 
 
 if __name__ == "__main__":

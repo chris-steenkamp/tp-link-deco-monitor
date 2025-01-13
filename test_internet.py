@@ -8,10 +8,10 @@ def check_host_and_port_are_reachable(host: str, port: int) -> bool:
             sock.settimeout(3)
 
             sock.connect((host, port))
-        print("Success!")
+        print("Success!", flush=True)
         return True
     except socket.error as e:
-        print(f"Failed with error: {e}")
+        print(f"Failed with error: {e}", flush=True)
         return False
 
 
